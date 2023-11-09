@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Price Prediction</title>
+</head>
+<body>
+
+    <h2>Stock Price Prediction</h2>
+
+    <label for="symbol">Enter Stock Symbol: </label>
+    <input type="text" id="symbol" placeholder="e.g., AAPL">
+    <button onclick="getStockData()">Get Stock Data</button>
+
+    <h3 id="stockSymbol"></h3>
+    <p>Open: <span id="stockOpen"></span></p>
+    <p>High: <span id="stockHigh"></span></p>
+    <p>Low: <span id="stockLow"></span></p>
+    <p>Close: <span id="stockClose"></span></p>
+    <p>Volume: <span id="stockVolume"></span></p>
+
+    <script>
+        function getStockData() {
+            var symbol = document.getElementById('symbol').value;
+            var apiKey = 'YOUR_API_KEY'; // Replace with your Alpha Vantage API key
+
+            var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + symbol + '&apikey=' + apiKey;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var metaData = data['Meta Data'];
+                    var timeSeries = data['Time Series (Daily)'];
+                    var lastRefreshed = metaData['3. Last Refreshed'];
+
+                    document.getElementById('stockSymbol').innerText = 'Stock Symbol: ' + symbol;
+                    document.getElementById('stockOpen').innerText = timeSeries[lastRefreshed]['1. open'];
+                    document.getElementById('stockHigh').innerText = timeSeries[lastRefreshed]['2. high'];
+                    document.getElementById('stockLow').innerText = timeSeries[lastRefreshed]['3. low'];
+                    document.getElementById('stockClose').innerText = timeSeries[lastRefreshed]['4. close'];
+                    document.getElementById('stockVolume').innerText = timeSeries[lastRefreshed]['5. volume'];
+                })
+                .catch(error => {
+                    console.log('Error fetching data:', error);
+                });
+        }
+    </script>
+
+</body>
+</html>
